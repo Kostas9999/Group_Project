@@ -1,20 +1,47 @@
 package os;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Scanner;
 
 import host.Host;
 
 public class Windows_CMD {
 
-    public static String run_CMD(String param) throws IOException {
+    public static String run_CMD(String param)  {
 	
 	String line = "";
-        Process p = Runtime.getRuntime().exec(param);    
-        BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));  
+        Process p = null;
+	try {
+	    p = Runtime.getRuntime().exec(param);
+	    
+	 
+	    
+	} catch (IOException e) {
+	    
+	   System.out.println("Error in executing CMD command " + e); 
+	}    
+        
     
-        while ( input.readLine() != null) { line += input.readLine(); }       
-        input.close();
+        try (Scanner input = new Scanner(p.getInputStream(), "IBM850");){
+            
+            input.useDelimiter("\n");
+       	   
+            while ( input.hasNext()) { line += input.next()+"\t"; }
+       	    return line;
+       	    
+       	    //sc.close();
+            /*
+            BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream())); 
+	    while ( input.readLine() != null) { line += input.readLine()+"\n"; }
+	    input.close();
+	    */
+	} catch ( NullPointerException e) {
+	    
+	   System.err.println("Error reading CMD Output \n" + e); 
+	}       
+        
         return line;
     }
     
@@ -26,12 +53,7 @@ public class Windows_CMD {
 	String arp_A = "arp -a " + host.getAddress().toString().substring(1);
 	
         String arr[] = null;
-	try {
-	    arr = run_CMD(arp_A).split("   ");
-	} catch (IOException e) {
-	    
-	    e.printStackTrace();
-	}
+	arr = run_CMD(arp_A).split("   ");
         for (String string : arr) {
         
    
@@ -41,7 +63,7 @@ public class Windows_CMD {
                 host.setMacAddress(s); 
                 break;
             }            
-            else {host.setMacAddress("Not:this:time"); }
+            
             }
         }
     
@@ -49,17 +71,13 @@ public class Windows_CMD {
     //ping -a -n 1  192.168.0.8
     public static void getHostName(Host host) 
     {
-	String hostname = "ping -a -n 1 " + host.getAddress().toString().substring(1);
+	String hostAddress = host.getAddress().toString().substring(1);
+	String hostname = "ping -a -n 1 " + hostAddress;
 	
         String arr[] = null;
-	try {
-	    arr = run_CMD(hostname).split(" ");
-	} catch (IOException e) {
-	    
-	    e.printStackTrace();
-	}
-        
-        host.setHostName(arr[1]);
+	arr = run_CMD(hostname).split(" ");
+       // if(arr[1].equals(hostAddress)) {host.setHostName(null); }
+	if(!arr[1].equals(hostAddress)) {host.setHostName(arr[1].toString());}
     }
     
     

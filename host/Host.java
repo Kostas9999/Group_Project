@@ -1,34 +1,31 @@
 package host;
 
 import java.net.InetAddress;
-import java.util.List;
+import java.util.HashMap;
+
 
 public class Host {
 	
 	private InetAddress address;
-	public String getMacVendor() {
-		return macVendor;
-	}
+	
 
-
-
-	public void setMacVendor(String macVendor) {
-		this.macVendor = macVendor;
-	}
-
-
-	private List<Integer> ports ;
+	public HashMap<Integer, String> ports ;
 	private String macAddress,macVendor, hostName;
 
 	public static int totalHosts;
 	
 	@Override
 	public String toString() {
-	    return "Host: " + address.toString().substring(1) 
-		    + "\nHostname: " + hostName
-		    + "\nmacAddress: " + macAddress  
-		    + "\nmacVendor: " + macVendor 
-		    + "\nports= " + ports + "\n";
+	    
+	    String hostname = getHostName() == null?"":"\nHostname: " + getHostName();
+	    String macAddress = getMacAddress() == null?"":"\nmacAddress: " + getMacAddress();
+	    String macVendor = getMacVendor() == null?"":"\nmacVendor: " + getMacVendor() ;
+	    
+	    return "Host IP: " + address.toString().substring(1) 
+		    + hostname
+		    + macAddress
+		    + macVendor
+		    + "\nports= " + getPorts().entrySet() + "\n";
 	}
 
 
@@ -40,8 +37,21 @@ public class Host {
 		totalHosts++;
 	}
 	
+	public String getMacVendor() {
+	    	
+	    	return macVendor;
+	}
+
+
+
+	public void setMacVendor(String macVendor) {
+		this.macVendor = macVendor;
+	}
+
+	
 	
 	public String getHostName() {
+	    
 	    return hostName;
 	}
 
@@ -51,13 +61,6 @@ public class Host {
 	    this.hostName = hostnm;
 	}
 
-
-
-	
-	
-	
-	
-	
 
 
 
@@ -71,18 +74,19 @@ public class Host {
 	}
 
 
-	public List<Integer> getPorts() {
-		return ports;
+	public HashMap<Integer,String> getPorts() {
+		return this.ports;
 	}
 
 
-	public void setPorts(List<Integer> ports) {
-		this.ports = ports;
-	}
+	
+	  public void setPorts(HashMap<Integer,String> ports) { this.ports = ports; }
+	 
 
 
 	public String getMacAddress() {
-		return macAddress;
+	    
+	     return this.macAddress;
 	}
 
 

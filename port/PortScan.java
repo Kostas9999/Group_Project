@@ -1,8 +1,14 @@
 package port;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.net.*;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+
+
 
 import host.Host;
 
@@ -10,50 +16,85 @@ import host.Host;
 
 public class PortScan {
     
-    int portNr[] ={
-	    
-	        1,3,7,9,13,17,19,21,22,23,25,26,37,53,79,81,82,80,88,100,106,110,111,113,119,135,139,143,144,179,199,254,255,280,311,389,427,443,445,464,465,497,513,515,543,544,548,554,587,593,625,631,636,646,787,808,873,902,990,993,995,1000,1022,1024,1033,1035,1041,1044,1048,1050,1053,1054,1056,1058,1059,1064,1066,1069,1071,1074,1080,1110,1234,1433,1494,1521,1720,1723,1755,1761,1801,1900,1935,1998,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2049,2103,2105,2107,2121,2161,2179,2301,2383,2401,2601,2717,2869,2967,3000,3001,3128,3268,3306,3389,3689,3690,3703,3986,4000,4001,4045,4899,5000,5001,5003,5009,5050,5051,5060,5080,5101,5120,5190,5357,5432,5555,5631,5666,5800,5900,5901,6000,6002,6004,6112,6646,6666,7000,7070,7547,7937,7938,8000,8002,8008,8010,8031,8080,8081,8443,8888,9000,9001,9050,9090,9100,9102,9999,10001,10010,32768,32771,49152,49157,50000
-	    };
+   {readPortFile() ;}
+    
+    public static HashMap<Integer, String> portHashMap= new HashMap<>();
+   
+    
+   static  List<Integer> listOfports = portHashMap.keySet().stream().sorted().collect(Collectors.toList());
+     
+     
+   static int[] portList_Known2 = listOfports.stream().mapToInt(i->i).toArray();
+    
+    
+   static int portList_Known[] ={1,3,7,9,13,17,19,21,22,23,25,26,37,53,79,81,82,80,88,100,106,110,111,113,119,135,139,143,144,179,199,254,255,280,311,389,427,443,445,464,465,497,513,515,543,544,548,554,587,593,625,631,636,646,787,808,873,902,990,993,995,1000,1022,1024,1033,1035,1041,1044,1048,1050,1053,1054,1056,1058,1059,1064,1066,1069,1071,1074,1080,1110,1234,1433,1494,1521,1720,1723,1755,1761,1801,1900,1935,1998,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2049,2103,2105,2107,2121,2161,2179,2301,2383,2401,2601,2717,2869,2967,3000,3001,3128,3268,3306,3389,3689,3690,3703,3986,4000,4001,4045,4899,5000,5001,5003,5009,5050,5051,5060,5080,5101,5120,5190,5357,5432,5555,5631,5666,5800,5900,5901,6000,6002,6004,6112,6646,6666,7000,7070,7547,7937,7938,8000,8002,8008,8010,8031,8080,8081,8443,8888,9000,9001,9050,9090,9100,9102,9999,10001,10010,32768,32771,49152,49157,50000};
+   static int portList_Known1[] ={21,22,23,25,80,443,8080};
+   
 
   public  void  portScanner(Host host){
       
-      List<Integer> openPorts = new ArrayList<>();
-
+      HashMap<Integer, String> openPorts = new HashMap<>();
+      
+      // Integer[] portList_Known = new Integer[listOfports.size()];
+      //listOfports.toArray(portList_Known);
+      
       InetAddress inAddress = host.getAddress();
 
-System.out.println("\n\t\t Starting Port Scan  \n\t" + inAddress.toString().substring(1) + "  ||  " + host.getHostName() + "  ||  "+ host.getMacAddress() +"\n" );
 
+  //  int counter = portList_Known.length;
 
-    int counter = portNr.length;
+//while(counter > 0)
+//{
+   
 
-while(counter > 0)
-{
-  
-  //System.out.println("\n\n\t"+inAddress);
-  
-
-      for (int i = 0; i < portNr.length; i++) {
+      for (int i = 0; i < portList_Known.length; i++) {
+	
 
     try
-    {
-    
-        Socket scannerSocket = new Socket();
-        scannerSocket.connect(new InetSocketAddress(inAddress, portNr[i]),50);
+    {       
+	Socket scannerSocket = new Socket();
+	 
+        scannerSocket.connect(new InetSocketAddress(inAddress, portList_Known[i]),50);
         scannerSocket.close();
-        System.out.println("Open port: "+ portNr[i]+ "\t\t"+ portName(portNr[i]));
-        openPorts.add(portNr[i]);
-      }catch(Exception e)
-      {
-     //e.printStackTrace();
-      
-      }
-   finally{counter--;}
-    }
+        
      
+       
+        openPorts.put(portList_Known[i], portName(portList_Known[i]));//    .put(portList_Known[i], portName(portList_Known[i]));
+       
+        System.out.println(inAddress.toString().substring(1) + ": "+ portList_Known[i] + "\t"+ portHashMap.get(portList_Known[i]) + " \t\t"+test.Test.getProgramByPID(test.Test.getPidByPort(portList_Known[i])));
+     
+      }catch(Exception e){}
+    	//finally{counter--;}
     }
+   //   }
     
 host.setPorts(openPorts);
   };
+  
+  
+  
+  public static  void readPortFile() 
+  {
+    	String st;
+      File file = new File("port_list.txt");
+      
+	try ( BufferedReader br = new BufferedReader(new FileReader(file));)
+	{
+	    while ((st = br.readLine()) != null) {
+		
+		String spStr[] = st.split("\t");		
+		portHashMap.put(Integer.valueOf( spStr[0].trim()), spStr[1].trim());		
+	    }
+	   
+	} 
+	catch (Exception e) {
+	    e.printStackTrace();
+	}
+  
+  }
+  
+  
+  
 
   public static String portName(int scannedPort){
 
